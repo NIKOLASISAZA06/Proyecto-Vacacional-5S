@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto Vacacional - 5 Semanas</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-graduation-cap"></i> Proyecto Vacacional 5S</h2>
+                <h6>By NIKO</h6>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item" data-section="cronograma">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Cronograma</span>
+                </li>
+                <li class="nav-item" data-section="checklist">
+                    <i class="fas fa-check-square"></i>
+                    <span>Checklist Diario</span>
+                </li>
+                <li class="nav-item" data-section="academico">
+                    <i class="fas fa-book"></i>
+                    <span>Progreso Académico</span>
+                </li>
+                <li class="nav-item" data-section="fisico">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>Progreso Físico</span>
+                </li>
+                <li class="nav-item" data-section="pomodoro">
+                    <i class="fas fa-clock"></i>
+                    <span>Timer Pomodoro</span>
+                </li>
+                <li class="nav-item" data-section="recetas">
+                    <i class="fas fa-utensils"></i>
+                    <span>Recetas</span>
+                </li>
+                <li class="nav-item" data-section="configuracion">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h1>Dashboard</h1>
+                    <div class="current-time" id="currentTime"></div>
+                </div>
+                <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+                    <!-- Promedio académico -->
+                    <div class="card dashboard-card" style="text-align:center;">
+                        <div class="card__body">
+                            <h3>Promedio Académico</h3>
+                            <div class="dashboard-indicator">
+                                <div class="progress-circle" id="dailyAcademicProgress">
+                                    <span class="progress-text" id="academicAvg">0%</span>
+                                </div>
+                            </div>
+                            <button class="btn btn--primary" onclick="switchSection('academico')">Ver Detalle</button>
+                        </div>
+                    </div>
+                    <!-- Progreso físico -->
+                    <div class="card dashboard-card" style="text-align:center;">
+                        <div class="card__body">
+                            <h3>Progreso Físico</h3>
+                            <div class="dashboard-indicator">
+                                <div class="progress-circle" id="dailyPhysicalProgress">
+                                    <span class="progress-text" id="physicalAvg">0%</span>
+                                </div>
+                            </div>
+                            <div class="physical-stats">
+                                <div class="stat">
+                                    <span class="stat-value" id="dominadasCount">0</span>
+                                    <span class="stat-label">Dominadas</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value" id="fondosCount">0</span>
+                                    <span class="stat-label">Fondos</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value" id="gymDaysCount">0</span>
+                                    <span class="stat-label">Días Gym</span>
+                                </div>
+                            </div>
+                            <button class="btn btn--primary" onclick="switchSection('fisico')">Ver Detalle</button>
+                        </div>
+                    </div>
+                    <!-- Adherencia diaria -->
+                    <div class="card dashboard-card" style="text-align:center;">
+                        <div class="card__body">
+                            <h3>Adherencia Diaria</h3>
+                            <div class="dashboard-indicator">
+                                <div class="progress-circle" id="dailyProgress">
+                                    <span class="progress-text">0%</span>
+                                </div>
+                            </div>
+                            <button class="btn btn--primary" onclick="switchSection('checklist')">Ir a Checklist</button>
+                        </div>
+                    </div>
+                    <!-- Semana actual (simplificada, sin gráfica) -->
+                    <div class="card dashboard-card" style="text-align:center;">
+                        <div class="card__body">
+                            <h3>Semana Actual</h3>
+                            <div id="weekDateRange" style="margin:8px 0; color:var(--color-text-secondary); font-size:1rem;"></div>
+                            <div class="week-indicator">
+                                <span class="week-number" id="currentWeek">1</span>
+                                <span class="week-text">/ 5</span>
+                            </div>
+                            <button class="btn btn--primary" onclick="switchSection('cronograma')" style="margin-top:12px;">Ver Cronograma</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cronograma Section -->
+            <section id="cronograma" class="section">
+                <div class="section-header">
+                    <h1>Cronograma Semanal</h1>
+                    <div class="week-navigator">
+                        <button class="btn btn--outline" id="prevWeek">
+                            <i class="fas fa-chevron-left"></i> Anterior
+                        </button>
+                        <span id="weekDisplay">Semana 1</span>
+                        <button class="btn btn--outline" id="nextWeek">
+                            Siguiente <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="schedule-grid" id="scheduleGrid">
+                    <!-- Schedule will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Checklist Diario Section -->
+            <section id="checklist" class="section">
+                <div class="section-header">
+                    <h1>Checklist Diario</h1>
+                    <div class="checklist-date" id="checklistDate"></div>
+                </div>
+                
+                <div class="checklist-container" id="checklistContainer">
+                    <!-- Checklist items will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Progreso Académico Section -->
+            <section id="academico" class="section">
+                <div class="section-header">
+                    <h1>Progreso Académico</h1>
+                </div>
+                
+                <div class="academic-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <canvas id="academicChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="subjects-container" id="subjectsContainer">
+                        <!-- Subject lists will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Progreso Físico Section -->
+            <section id="fisico" class="section">
+                <div class="section-header">
+                    <h1>Progreso Físico</h1>
+                </div>
+                
+                <div class="physical-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <canvas id="physicalChart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="physical-controls">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Dominadas</h3>
+                                <div class="counter-controls">
+                                    <span class="counter-value" id="dominadasDisplay">0</span>
+                                    <div class="counter-buttons">
+                                        <button class="btn btn--primary" onclick="updateExercise('dominadas', 1)">+1</button>
+                                        <button class="btn btn--secondary" onclick="updateExercise('dominadas', -1)">-1</button>
+                                    </div>
+                                </div>
+                                <div class="weight-input">
+                                    <label>Peso adicional (kg):</label>
+                                    <input type="number" id="dominadasWeight" min="0" step="0.5" onchange="updateExerciseWeight('dominadas', this.value)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Fondos</h3>
+                                <div class="counter-controls">
+                                    <span class="counter-value" id="fondosDisplay">0</span>
+                                    <div class="counter-buttons">
+                                        <button class="btn btn--primary" onclick="updateExercise('fondos', 1)">+1</button>
+                                        <button class="btn btn--secondary" onclick="updateExercise('fondos', -1)">-1</button>
+                                    </div>
+                                </div>
+                                <div class="weight-input">
+                                    <label>Peso adicional (kg):</label>
+                                    <input type="number" id="fondosWeight" min="0" step="0.5" onchange="updateExerciseWeight('fondos', this.value)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Días de Gimnasio</h3>
+                                <div class="counter-controls">
+                                    <span class="counter-value" id="gymDaysDisplay">0</span>
+                                    <div class="counter-buttons">
+                                        <button class="btn btn--primary" onclick="updateExercise('gymDays', 1)">+1</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Timer Pomodoro Section -->
+            <section id="pomodoro" class="section">
+                <div class="section-header">
+                    <h1>Timer Pomodoro</h1>
+                </div>
+                
+                <div class="pomodoro-container">
+                    <div class="pomodoro-timer">
+                        <div class="timer-circle" id="timerCircle">
+                            <div class="timer-progress" id="timerProgress"></div>
+                            <div class="timer-display">
+                                <div class="timer-time" id="timerTime">25:00</div>
+                                <div class="timer-label" id="timerLabel">Trabajo</div>
+                            </div>
+                        </div>
+                        
+                        <div class="timer-controls">
+                            <button class="btn btn--primary" id="startPauseBtn">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                            <button class="btn btn--secondary" id="resetBtn">
+                                <i class="fas fa-refresh"></i> Reiniciar
+                            </button>
+                        </div>
+                        
+                        <div class="pomodoro-stats">
+                            <div class="stat">
+                                <span class="stat-value" id="pomodoroCount">0</span>
+                                <span class="stat-label">Pomodoros Completados</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recetas Section -->
+            <section id="recetas" class="section">
+                <div class="section-header">
+                    <h1>Recetas</h1>
+                </div>
+                
+                <div class="recipes-grid">
+                    <div class="card recipe-card">
+                        <div class="card__body">
+                            <h3>Ginger Shot</h3>
+                            <div class="recipe-ingredients">
+                                <h4>Ingredientes:</h4>
+                                <ul>
+                                    <li>3-4 cm jengibre</li>
+                                    <li>Jugo de 1/2 limón</li>
+                                    <li>1/2 taza agua</li>
+                                    <li>Pizca cúrcuma</li>
+                                    <li>Pizca pimienta negra</li>
+                                    <li>Miel (opcional)</li>
+                                </ul>
+                            </div>
+                            <div class="recipe-preparation">
+                                <h4>Preparación:</h4>
+                                <p>Licuar todos los ingredientes, colar y refrigerar. Rinde para 2 días.</p>
+                                <small>Agitar antes de tomar, conservar en vidrio</small>
+                            </div>
+                            <button class="btn btn--primary" onclick="markRecipePrepared('gingerShot')">
+                                Marcar como Preparado
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card recipe-card">
+                        <div class="card__body">
+                            <h3>Batido Proteico Post-Entreno</h3>
+                            <div class="recipe-ingredients">
+                                <h4>Ingredientes:</h4>
+                                <ul>
+                                    <li>1 scoop proteína</li>
+                                    <li>1 banana</li>
+                                    <li>1 taza leche (vegetal o normal)</li>
+                                    <li>1 cda mantequilla maní (opcional)</li>
+                                    <li>Canela</li>
+                                    <li>Hielo</li>
+                                </ul>
+                            </div>
+                            <div class="recipe-preparation">
+                                <h4>Preparación:</h4>
+                                <p>Licuar y beber al instante</p>
+                                <small>Consumir inmediatamente después del entrenamiento</small>
+                            </div>
+                            <button class="btn btn--primary" onclick="markRecipePrepared('batidoProteico')">
+                                Marcar como Preparado
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configuración Section -->
+            <section id="configuracion" class="section">
+                <div class="section-header">
+                    <h1>Configuración</h1>
+                </div>
+                
+                <div class="settings-container">
+                    <div class="card">
+                        <div class="card__body">
+                            <h3>Gestión de Datos</h3>
+                            <p>Esta acción eliminará todo el progreso guardado y no se puede deshacer.</p>
+                            <button class="btn btn--error" id="resetProgressBtn">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Resetear Todo el Progreso
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div class="modal" id="resetModal">
+        <div class="modal-content">
+            <h3>Confirmar Reset</h3>
+            <p>¿Estás seguro de que quieres eliminar todo el progreso? Esta acción no se puede deshacer.</p>
+            <div class="modal-buttons">
+                <button class="btn btn--secondary" id="cancelReset">Cancelar</button>
+                <button class="btn btn--error" id="confirmReset">Confirmar Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
